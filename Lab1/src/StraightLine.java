@@ -6,7 +6,7 @@ import lejos.robotics.navigation.DifferentialPilot;
 /**
  * Robot that stops if it hits something before it completes its travel.
  */
-public class line {
+public class StraightLine {
 	DifferentialPilot pilot;
 
 	public void go() {
@@ -20,7 +20,7 @@ public class line {
 	}
 
 	public static void main(String[] args) {
-		line traveler = new line();
+		StraightLine traveler = new StraightLine();
 		traveler.pilot = new DifferentialPilot(5.5f, 11.8f, Motor.A, Motor.B);
 		traveler.go();
 	}
