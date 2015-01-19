@@ -7,7 +7,7 @@ import lejos.hardware.motor.Motor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.utility.Delay;
 
-public class Braitenberg {
+public class BraitenbergOld {
 	DifferentialPilot pilot;
 
 	public void go() {
@@ -64,7 +64,7 @@ public class Braitenberg {
 	  }
 
 	public static void main(String[] args) {
-		Braitenberg traveler = new Braitenberg();
+		BraitenbergOld traveler = new BraitenbergOld();
 		traveler.pilot = new DifferentialPilot(5.5f, 11.8f, Motor.A, Motor.B);
 		traveler.go();
 	}
