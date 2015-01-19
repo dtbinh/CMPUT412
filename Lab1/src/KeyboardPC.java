@@ -4,231 +4,121 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
-import lejos.hardware.Bluetooth;
 import lejos.remote.nxt.NXTConnection;
+import lejos.remote.nxt.*;
 
-public class KeyboardPC extends JFrame
-{
-  public static JButton quit, connect;
-  public static JButton forward,reverse, leftTurn, rightTurn, stop, speedUp, slowDown;
-  public static JLabel L1,L2,L3,L4,L5,L6,L7,L8,L9,L10;
-  public static ButtonHandler bh = new ButtonHandler();
-  public static DataOutputStream outData;
-  public static NXTConnection link;
- 
-  public KeyboardPC()
-  {
-    setTitle ("Control");
-    setBounds(650,350,500,500);
-    setLayout(new GridLayout(4,5));
-   
-    L1 = new JLabel("");
-    add(L1);
-    forward = new JButton("Forward");
-    forward.addActionListener(bh);
-    forward.addMouseListener(bh);
-    forward.addKeyListener(bh);
-    add(forward);
-    L2 = new JLabel("");
-    add(L2);
-    L3 = new JLabel("");
-    add(L3);
-    speedUp = new JButton("Accelerate");
-    speedUp.addActionListener(bh);
-    speedUp.addMouseListener(bh);
-    speedUp.addKeyListener(bh);
-    add(speedUp);
+public class KeyboardPC extends JFrame {
+	private static final long serialVersionUID = 6950578690702745288L;
+	private static JLabel L1;
+	private static ButtonHandler bh = new ButtonHandler();
+	private static DataOutputStream outData;
+	private static NXTConnection link;
 
-    leftTurn = new JButton("Left");
-    leftTurn.addActionListener(bh);
-    leftTurn.addMouseListener(bh);
-    leftTurn.addKeyListener(bh);
-    add(leftTurn);
-    stop = new JButton("Stop");
-    stop.addActionListener(bh);
-    stop.addMouseListener(bh);
-    stop.addKeyListener(bh);
-    add(stop);
-   
-    rightTurn = new JButton("Right");
-    rightTurn.addActionListener(bh);
-    rightTurn.addMouseListener(bh);
-    rightTurn.addKeyListener(bh);
-    add(rightTurn);
-    L4 = new JLabel("");
-    add(L4);
-    slowDown = new JButton("Decelerate");
-    slowDown.addActionListener(bh);
-    slowDown.addMouseListener(bh);
-    slowDown.addKeyListener(bh);
-    add(slowDown);
-   
-    L5 = new JLabel("");
-    add(L5);
-    reverse = new JButton("Reverse");
-    reverse.addActionListener(bh);
-    reverse.addMouseListener(bh);
-    reverse.addKeyListener(bh);
-    add(reverse);
-   
-    L6 = new JLabel("");
-    add(L6);
-    L7 = new JLabel("");
-    add(L7);
-    L8 = new JLabel("");
-    add(L8);
+	public KeyboardPC() {
+		setTitle("Control");
+		setBounds(400, 200, 500, 500);
+		setLayout(new GridLayout(1, 3));
+		this.addKeyListener(bh);
 
-    connect = new JButton(" Connect ");
-    connect.addActionListener(bh);
-    connect.addKeyListener(bh);
-    add(connect);
+		L1 = new JLabel("Message");
+		L1.setHorizontalAlignment(SwingConstants.CENTER);
+		add(new JLabel(""));
+		add(L1);
+		add(new JLabel(""));
+	}
 
-    L9 = new JLabel("");
-    add(L9);
-    L10 = new JLabel("");
-    add(L10);
-   
-    quit = new JButton("Quit");
-    quit.addActionListener(bh);
-    add(quit);
+	public static void main(String[] args) {
+		KeyboardPC remoteKeyboard = new KeyboardPC();
+		remoteKeyboard.connect();
+		
+		remoteKeyboard.setVisible(true);
+		remoteKeyboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
 
-  }
- 
-  public static void main(String[] args)
-  {
-     KeyboardPC NXTrc = new KeyboardPC();
-     NXTrc.setVisible(true);
-     NXTrc.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-  }//End main
- 
-  private static class ButtonHandler implements ActionListener, MouseListener, KeyListener
-  {
-//***********************************************************************
-  //Buttons action
-    public void actionPerformed(ActionEvent ae)
-    {
-      if(ae.getSource() == quit)  {System.exit(0);}
-      if(ae.getSource() == connect) {connect();}
-     
-      try{
-         if(ae.getSource() == speedUp) {outData.writeInt(6);}
-         if(ae.getSource() == slowDown) {outData.writeInt(7);}
-         outData.flush(); //This forces any buffered output bytes to be written out to the stream.
-        }
-         catch (IOException ioe) {
-        System.out.println("\nIO Exception writeInt");
-         }
-     
-     }//End ActionEvent(for buttons)
+	private static class ButtonHandler implements KeyListener {
 
-//***********************************************************************
-//Mouse actions
-    public void mouseClicked(MouseEvent arg0) {}
+		public void keyPressed(KeyEvent ke) {
+			try {
+				if (ke.getKeyCode() == KeyEvent.VK_UP || ke.getKeyChar() == 'w') {
+					L1.setText("Up");
+					System.out.println("Up");
+					//outData.writeInt(1);
+				}
+				if (ke.getKeyCode() == KeyEvent.VK_DOWN || ke.getKeyChar() == 's') {
+					L1.setText("Down");
+					System.out.println("Down");
+					//outData.writeInt(2);
+				}
+				if (ke.getKeyCode() == KeyEvent.VK_LEFT || ke.getKeyChar() == 'a') {
+					L1.setText("Left");
+					System.out.println("Left");
+					//outData.writeInt(3);
+				}
+				if (ke.getKeyCode() == KeyEvent.VK_RIGHT || ke.getKeyChar() == 'd') {
+					L1.setText("Right");
+					System.out.println("Right");
+					//outData.writeInt(4);
+				}
+			} catch (Exception ioe) {
+				System.out.println("\nIO Exception writeInt");
+			}
+		}
 
-   public void mouseEntered(MouseEvent arg0) {}
+		public void keyTyped(KeyEvent ke) {
+			try {
+				/*
+				 * if(ke.getKeyChar() == 'w')outData.writeInt(1);
+				 * if(ke.getKeyChar() == 's')outData.writeInt(2);
+				 * if(ke.getKeyChar() == 'a')outData.writeInt(3);
+				 * if(ke.getKeyChar() == 'd')outData.writeInt(4);
+				 * if(ke.getKeyChar() == 'i')outData.writeInt(6);
+				 * if(ke.getKeyChar() == 'k')outData.writeInt(7);
+				 * outData.flush();
+				 */
+			} catch (Exception ioe) {
+				System.out.println("\nIO Exception writeInt");
+			}
 
-   public void mouseExited(MouseEvent arg0) {}
+		}
 
-   public void mousePressed(MouseEvent moe)
-   {   
-         try {
-            if(moe.getSource() == forward)outData.writeInt(1);
-            if(moe.getSource() == reverse)outData.writeInt(2);
-            if(moe.getSource() == leftTurn)outData.writeInt(3);
-            if(moe.getSource() == rightTurn)outData.writeInt(4);
-            if(moe.getSource() == speedUp)outData.writeInt(6);
-            if(moe.getSource() == slowDown)outData.writeInt(7);
-         
-            outData.flush();
-            }
-         catch (IOException ioe) {
-            System.out.println("\nIO Exception writeInt");
-         }
-       
-   }//End mousePressed
+		public void keyReleased(KeyEvent ke) {
+			try {
+				/*
+				 * if(ke.getKeyChar() == 'w'){outData.writeInt(10);}
+				 * if(ke.getKeyChar() == 's'){outData.writeInt(20);}
+				 * if(ke.getKeyChar() == 'a'){outData.writeInt(30);}
+				 * if(ke.getKeyChar() == 'd'){outData.writeInt(40);}
+				 * if(ke.getKeyChar() == 'i'){outData.writeInt(60);}
+				 * if(ke.getKeyChar() == 'k'){outData.writeInt(70);}
+				 * if(ke.getKeyChar() == 'q'){System.exit(0);}
+				 * outData.flush();
+				 */
+			} catch (Exception ioe) {
+				System.out.println("\nIO Exception writeInt");
+			}
+		}
 
-   public void mouseReleased(MouseEvent moe)
-   {
-       try {
-         if(moe.getSource() == forward ||
-            moe.getSource() == reverse ||
-            moe.getSource() == leftTurn ||
-            moe.getSource() == rightTurn)
-           {outData.writeInt(5);}
-         if(moe.getSource() == slowDown)outData.writeInt(60);
-         if(moe.getSource() == speedUp)outData.writeInt(70);
-         
-         outData.flush();
-          }
-        catch (IOException ioe) {
-           System.out.println("\nIO Exception writeInt");
-        }
-      
-   }//End mouseReleased
+	}
 
-//***********************************************************************
-//Keyboard action
-   public void keyPressed(KeyEvent ke) {}//End keyPressed
+	public void connect() {
+		
+		BTConnector bt = new BTConnector();
+		
+		//link = bt.connect("someip or name", NXTConnection.RAW);
+		link = bt.waitForConnection(10000, NXTConnection.RAW);
+		
+		outData = link.openDataOutputStream();
+		System.out.println("\nNXT is Connected");
 
-   public void keyTyped(KeyEvent ke)
-   {
-      try {
-         if(ke.getKeyChar() == 'w')outData.writeInt(1);
-          if(ke.getKeyChar() == 's')outData.writeInt(2);
-         if(ke.getKeyChar() == 'a')outData.writeInt(3);
-         if(ke.getKeyChar() == 'd')outData.writeInt(4);
-          if(ke.getKeyChar() == 'i')outData.writeInt(6);
-          if(ke.getKeyChar() == 'k')outData.writeInt(7);
-         
-         outData.flush();
-         }
-      catch (IOException ioe) {
-         System.out.println("\nIO Exception writeInt");
-         }
-        
-   }//End keyTyped
-   
-   public void keyReleased(KeyEvent ke)
-   {
-       try {
-          if(ke.getKeyChar() == 'w'){outData.writeInt(10);}
-          if(ke.getKeyChar() == 's'){outData.writeInt(20);}
-          if(ke.getKeyChar() == 'a'){outData.writeInt(30);}
-          if(ke.getKeyChar() == 'd'){outData.writeInt(40);}
-          if(ke.getKeyChar() == 'i'){outData.writeInt(60);}
-          if(ke.getKeyChar() == 'k'){outData.writeInt(70);}
-         if(ke.getKeyChar() == 'q'){System.exit(0);}
-          
-          outData.flush();
-          }
-        
-        catch (IOException ioe) {
-           System.out.println("\nIO Exception writeInt");
-        }
-   }//End keyReleased
+	}
 
-  }//End ButtonHandler
- 
-  public static void connect()
-  {
-     link = Bluetooth.getNXTCommConnector().waitForConnection(10000, NXTConnection.PACKET);
-     outData = link.openDataOutputStream();
-     System.out.println("\nNXT is Connected");   
-    
-  }//End connect
- 
-  public static void disconnect()
-  {
-     try{
-        outData.close();
-        link.close();
-        }
-     catch (IOException ioe) {
-        System.out.println("\nIO Exception writing bytes");
-     }
-     System.out.println("\nClosed data streams");
-    
-  }//End disconnect
-}//End ControlWindow class
-
-
+	public static void disconnect() {
+		try {
+			outData.close();
+			link.close();
+		} catch (IOException ioe) {
+			System.out.println("\nIO Exception writing bytes");
+		}
+		System.out.println("\nClosed data streams");
+	}
+}
