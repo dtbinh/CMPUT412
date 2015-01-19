@@ -15,6 +15,7 @@ public class KeyboardPC extends JFrame {
 	private static NXTConnection link;
 
 	public KeyboardPC() {
+		
 		setTitle("Control");
 		setBounds(400, 200, 500, 500);
 		setLayout(new GridLayout(1, 3));

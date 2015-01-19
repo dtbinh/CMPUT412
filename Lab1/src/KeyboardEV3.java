@@ -2,8 +2,6 @@ import java.io.*;
 
 import lejos.hardware.Bluetooth;
 import lejos.hardware.motor.Motor;
-//import lejos.nxt.*;
-//import lejos.nxt.comm.*;
 import lejos.remote.nxt.*;
 import lejos.robotics.navigation.DifferentialPilot;
 
@@ -13,8 +11,8 @@ public class KeyboardEV3 {
 	public static DataOutputStream dataOut;
 	public static DataInputStream dataIn;
 	//public static USBConnection USBLink;
-	public static NXTConnection BTLink;
-	public static BTConnection btLink;
+	private static NXTConnection BTLink;
+	private static BTConnection btLink;
 	public static int speed = 50, turnSpeed = 50, speedBuffer, speedControl;
 	public static int commandValue, transmitReceived;
 	public static boolean[] control = new boolean[6];
