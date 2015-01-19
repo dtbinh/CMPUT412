@@ -18,44 +18,38 @@ public class DeadReckoning {
 		      {-50, 80, 2}
 		    };
 	
-	RegulatedMotor _left;
-	RegulatedMotor _right;
+	EncoderMotor _left;
+	EncoderMotor _right;
 	
-	float _leftWheelDiameter, _leftTurnRatio, _leftDegPerDistance;
-	float _rightWheelDiameter, _rightTurnRatio, _rightDegPerDistance;
-	
+	float _wheelDiameter;
+	float _distancePerTick;
 	float _trackWidth;
 	
-	public DeadReckoning(final double leftWheelDiameter,
-final double rightWheelDiameter, final double trackWidth,
-final RegulatedMotor leftMotor, final RegulatedMotor rightMotor)
+	public DeadReckoning(final double wheelDiameter, final double trackWidth,
+final EncoderMotor leftMotor, final EncoderMotor rightMotor)
 	{
+		// left
 		_left = leftMotor;
-		_leftWheelDiameter = (float) leftWheelDiameter;
-		_leftTurnRatio = (float) (trackWidth / leftWheelDiameter);
-		_leftDegPerDistance = (float) (360 / (Math.PI * leftWheelDiameter));
 		// right
 		_right = rightMotor;
-		_rightWheelDiameter = (float) rightWheelDiameter;
-		_rightTurnRatio = (float) (trackWidth / rightWheelDiameter);
-		_rightDegPerDistance = (float) (360 / (Math.PI * rightWheelDiameter));
 		// both
+		_wheelDiameter = (float) wheelDiameter;
+		_distancePerTick= (float) ((Math.PI * wheelDiameter) / 360);
 		_trackWidth = (float) trackWidth; 
 	}
-	
-	private void setSpeed(final int leftSpeed, final int rightSpeed) {
-		_left.setSpeed(leftSpeed);
-		_right.setSpeed(rightSpeed);
-	} 
 
 	public void go() {
+		int leftTachoCount = _left.getTachoCount();
+		int rightTachoCount = _right.getTachoCount();
+		
+		float heading = 0.f;
+		float x = 0.f;
+		float y = 0.f;
 		
 		for (int i = 0; i < 3; i++) {
-			_left.resetTachoCount();
-			_right.resetTachoCount();
 			
-			setSpeed((int) Math.round(command[i][0] * _leftDegPerDistance),
-					(int) Math.round(command[i][1] * _rightDegPerDistance));
+			_left.setPower(command[i][0]);
+			_right.setPower(command[i][1]);
 			
 			_left.forward();
 			_right.forward();
@@ -65,16 +59,34 @@ final RegulatedMotor leftMotor, final RegulatedMotor rightMotor)
 			_left.stop();
 			_right.stop();
 			
-			float leftDistance = _left.getTachoCount() * _leftDegPerDistance;
-			float rightDistance = _left.getTachoCount() * _rightDegPerDistance;
+			int newLeftTachoCount = _left.getTachoCount() - leftTachoCount;
+			int newRightTachoCount = _right.getTachoCount() - rightTachoCount;
+			
+			float distance = ((newLeftTachoCount + newRightTachoCount) / 2.f) * _distancePerTick;
+			float ticksPerRotation = (float) (Math.PI * _trackWidth) / _distancePerTick;
+			float radiansPerTick = (float) (2.f * Math.PI) / ticksPerRotation;
+			float changeInHeading = (float) (newRightTachoCount - newLeftTachoCount) * (radiansPerTick / 2);
+			
+			heading += changeInHeading;
+			x += distance*Math.cos(heading);
+			y += distance*Math.sin(heading);
+			
+			leftTachoCount = _left.getTachoCount();
+			rightTachoCount = _right.getTachoCount();
 		}
-
+		
+		System.out.println("Heading:" + heading);
+		System.out.println("Position: (" + x + ", " + y + ")");
 		
 		Button.waitForAnyPress();
 	}
 
 	public static void main(String[] args) {
-		DeadReckoning traveler = new DeadReckoning(5.5, 5.5, 11.8, Motor.A, Motor.B);
+		DeadReckoning traveler = new DeadReckoning(
+				5.5, 
+				11.8, 
+				new NXTMotor (MotorPort.A), 
+				new NXTMotor (MotorPort.B));
 		traveler.go();
 	}
 }
