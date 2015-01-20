@@ -1,17 +1,13 @@
 import lejos.hardware.Button;
-import lejos.hardware.motor.Motor;
 import lejos.hardware.motor.NXTMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.robotics.EncoderMotor;
-import lejos.robotics.RegulatedMotor;
-import lejos.robotics.navigation.DifferentialPilot;
 import lejos.utility.Delay;
 
 /**
  * Robot that stops if it hits something before it completes its travel.
  */
 public class DeadReckoning {
-	DifferentialPilot pilot;
 	int[][] command = {
 		      { 80, 60, 2},
 		      { 60, 60, 1},
@@ -39,6 +35,9 @@ final EncoderMotor leftMotor, final EncoderMotor rightMotor)
 	}
 
 	public void go() {
+		_left.resetTachoCount();
+		_right.resetTachoCount();
+		
 		int leftTachoCount = _left.getTachoCount();
 		int rightTachoCount = _right.getTachoCount();
 		
@@ -54,28 +53,30 @@ final EncoderMotor leftMotor, final EncoderMotor rightMotor)
 			_left.forward();
 			_right.forward();
 			
-			Delay.msDelay(command[i][2]*1000);
+			for (int delay = 0; delay < command[i][2]*100; delay++) {
+				int newLeftTachoCount = _left.getTachoCount() - leftTachoCount;
+				int newRightTachoCount = _right.getTachoCount() - rightTachoCount;
+				
+				leftTachoCount = _left.getTachoCount();
+				rightTachoCount = _right.getTachoCount();
+				
+				float distance = ((newLeftTachoCount + newRightTachoCount) / 2.f) * _distancePerTick;
+				float ticksPerRotation = (float) (Math.PI * _trackWidth) / _distancePerTick;
+				float radiansPerTick = (float) (2.f * Math.PI) / ticksPerRotation;
+				float changeInHeading = (float) (newRightTachoCount - newLeftTachoCount) * (radiansPerTick / 2);
+				
+				heading += changeInHeading;
+				x += distance*Math.cos(heading);
+				y += distance*Math.sin(heading);
+				
+				Delay.msDelay(10);
+			}
 			
 			_left.stop();
 			_right.stop();
-			
-			int newLeftTachoCount = _left.getTachoCount() - leftTachoCount;
-			int newRightTachoCount = _right.getTachoCount() - rightTachoCount;
-			
-			float distance = ((newLeftTachoCount + newRightTachoCount) / 2.f) * _distancePerTick;
-			float ticksPerRotation = (float) (Math.PI * _trackWidth) / _distancePerTick;
-			float radiansPerTick = (float) (2.f * Math.PI) / ticksPerRotation;
-			float changeInHeading = (float) (newRightTachoCount - newLeftTachoCount) * (radiansPerTick / 2);
-			
-			heading += changeInHeading;
-			x += distance*Math.cos(heading);
-			y += distance*Math.sin(heading);
-			
-			leftTachoCount = _left.getTachoCount();
-			rightTachoCount = _right.getTachoCount();
 		}
 		
-		System.out.println("Heading:" + heading);
+		System.out.println("Heading: " + (180/Math.PI)*heading % 360);
 		System.out.println("Position: (" + x + ", " + y + ")");
 		
 		Button.waitForAnyPress();
