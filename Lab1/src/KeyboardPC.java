@@ -13,6 +13,13 @@ public class KeyboardPC extends JFrame {
 	private static DataOutputStream outData;
 	private static NXTConnection link;
 
+	
+	private static KeyState upState;
+	private static KeyState downState;
+	private static KeyState leftState;
+	private static KeyState rightState;
+	private static boolean connected=true; 
+	
 	public KeyboardPC() {
 		
 		setTitle("Control");
@@ -25,6 +32,26 @@ public class KeyboardPC extends JFrame {
 		add(new JLabel(""));
 		add(msg);
 		add(new JLabel(""));
+		
+		upState = new KeyState('w');
+		downState = new KeyState('s');
+		leftState = new KeyState('a');
+		rightState = new KeyState('d');
+		
+		Thread thread = new Thread() {
+			public void run() {
+				while (connected) {
+					try {
+						Thread.sleep(16);
+						updateStates();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+		thread.start();
+		
 	}
 
 	public static void main(String[] args) {
@@ -33,36 +60,87 @@ public class KeyboardPC extends JFrame {
 		remoteKeyboard.setVisible(true);
 		remoteKeyboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
+	
+	public static void updateStates() throws IOException{
+		if(upState.isChanged()){
+			boolean up = upState.isPressed();
+			System.out.println("Up = "+up);
+			if(up)
+				outData.writeInt(10);
+			else
+				outData.writeInt(-10);
+			outData.flush();
+		}
+		if(downState.isChanged()){
+			boolean down = downState.isPressed();
+			if(down)
+				outData.writeInt(20);
+			else
+				outData.writeInt(-20);
+			outData.flush();
+			System.out.println("down "+down);
+		}
+		if(leftState.isChanged()){
+			boolean left = leftState.isPressed();
+			if(left)
+				outData.writeInt(30);
+			else
+				outData.writeInt(-30);
+			outData.flush();
+			
+			System.out.println("left "+left);
+		}
+		if(rightState.isChanged()){
+			boolean right = rightState.isPressed();
+			if(right)
+				outData.writeInt(40);
+			else
+				outData.writeInt(-40);
+			outData.flush();
+			System.out.println("right = "+right);
+		}
+		
+		if (!upState.isPressed() &&
+				!downState.isPressed() &&
+				!leftState.isPressed() &&
+				!rightState.isPressed()) {
+			outData.writeInt(50);
+			outData.flush();
+		}
+	}
+	
 
 	private static class ButtonHandler implements KeyListener {
-
+		ButtonHandler() {
+		}
+		
 		public void keyPressed(KeyEvent ke) {
+			
+			upState.check(true, ke.getKeyChar());
+			downState.check(true, ke.getKeyChar());
+			leftState.check(true, ke.getKeyChar());
+			rightState.check(true, ke.getKeyChar());
+			
+			
 			try {
 				if (ke.getKeyCode() == KeyEvent.VK_UP || ke.getKeyChar() == 'w') {
 					msg.setText("Up");
-					System.out.println("Up");
-					outData.writeInt(10);outData.flush();
 				}
 				if (ke.getKeyCode() == KeyEvent.VK_DOWN || ke.getKeyChar() == 's') {
 					msg.setText("Down");
-					System.out.println("Down");
-					outData.writeInt(20);outData.flush();
 				}
 				if (ke.getKeyCode() == KeyEvent.VK_LEFT || ke.getKeyChar() == 'a') {
 					msg.setText("Left");
-					System.out.println("Left");
-					outData.writeInt(30);outData.flush();
 				}
 				if (ke.getKeyCode() == KeyEvent.VK_RIGHT || ke.getKeyChar() == 'd') {
 					msg.setText("Right");
-					System.out.println("Right");
-					outData.writeInt(40);outData.flush();
 				}
+		
 				if(ke.getKeyChar() == 'q') {
 					disconnect();
+					connected=false;
 					msg.setText("Disconnected");
 				}
-				Thread.sleep(100);
 			} catch (Exception ioe) {
 				System.out.println("\nIO Exception writeInt");
 			}
@@ -70,7 +148,12 @@ public class KeyboardPC extends JFrame {
 
 		public void keyTyped(KeyEvent ke) {}
 
-		public void keyReleased(KeyEvent ke) {}
+		public void keyReleased(KeyEvent ke) {
+			upState.check(false, ke.getKeyChar());
+			downState.check(false, ke.getKeyChar());
+			leftState.check(false, ke.getKeyChar());
+			rightState.check(false, ke.getKeyChar());
+		}
 
 	}
 
@@ -79,6 +162,8 @@ public class KeyboardPC extends JFrame {
 		BTConnector bt = new BTConnector();
 		link = bt.connect("00:16:53:44:C2:C6", NXTConnection.RAW);
 		outData = link.openDataOutputStream();
+		connected = true;
+		msg.setText("Connected!!!");
 		System.out.println("Connected :') ");
 
 	}

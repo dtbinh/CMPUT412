@@ -47,38 +47,64 @@ public class KeyboardEV3 {
 		motorA.resetTachoCount();
 		motorB.resetTachoCount();
 		
-		
 		while (!Button.DOWN.isDown()) {
 
 			try {
-				powerA = 0;
-				powerB = 0;
-				addedPowerA=0;
-				addedPowerB=0;
+				
 				
 				int data = dataIn.readInt();
 				
-				if (data==10){
-					powerA = 25;
-					powerB = 25;
+				if (data==10){ //forward pressed
+					powerA += 75;
+					powerB += 75;
 				}
-				if (data==20){
-					powerA = -25;
-					powerB = -25;
+				if (data==-10){ //forward released
+					powerA -= 75;
+					powerB -= 75;
 				}
-				if (data==30){ //left
-					addedPowerA=-25;
-					addedPowerB=25;
+				if (data==20){ //backward pressed
+					powerA -= 75;
+					powerB -= 75;
 				}
-				if (data==40){ //right
-					addedPowerA=25;
-					addedPowerB=-25;
+				if (data==-20){ //backward released
+					powerA += 75;
+					powerB += 75;
+				}
+				if (data==30){ //left pressed
+					addedPowerA-=30;
+					addedPowerB+=30;
+				}
+				if (data==-30){ //left released
+					addedPowerA+=30;
+					addedPowerB-=30;
+				}
+				if (data==40){ //right pressed
+					addedPowerA+=30;
+					addedPowerB-=30;
+				}
+				if (data==-40){ //right released
+					addedPowerA-=30;
+					addedPowerB+=30;
 				}
 				
 				int totalA=powerA+addedPowerA;
 				int totalB=powerB+addedPowerB;
 				
-				if(totalA<0){
+				if (data==50){ //right released
+					totalA = 0;
+					totalB = 0;
+					
+					powerA = 0;
+					powerB = 0;
+					
+					addedPowerA = 0;
+					addedPowerB = 0;
+				}
+				
+				if (totalA == 0) {
+					motorA.stop();
+				}
+				else if(totalA<0){
 					motorA.setPower(-totalA);
 					motorA.backward();
 				}else{
@@ -86,7 +112,10 @@ public class KeyboardEV3 {
 					motorA.forward();
 				}
 				
-				if(totalB<0){
+				if (totalB == 0) {
+					motorB.stop();
+				}
+				else if(totalB<0){
 					motorB.setPower(-totalB);
 					motorB.backward();
 				}else{
@@ -94,16 +123,10 @@ public class KeyboardEV3 {
 					motorB.forward();
 				}
 				
-				
-				Delay.msDelay(100);
-				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
 			}
-			
-			motorA.stop();
-			motorB.stop();
 		}
 		
 	}
