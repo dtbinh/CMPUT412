@@ -12,7 +12,7 @@ public class Circle {
 		System.out.println(" " + pilot.getMovement().getAngleTurned());
 		
 		pilot.setTravelSpeed(15);
-		pilot.steer(60, 370);
+		pilot.steer(60, 360);
 		
 		System.out.println(" " + pilot.getMovement().getAngleTurned());
 		Button.waitForAnyPress();
@@ -20,7 +20,7 @@ public class Circle {
 
 	public static void main(String[] args) {
 		Circle traveler = new Circle();
-		traveler.pilot = new DifferentialPilot(5.5f, 11.8f, Motor.A, Motor.B);
+		traveler.pilot = new DifferentialPilot(5.5f, 12.f, Motor.A, Motor.B);
 		traveler.go();
 	}
 }

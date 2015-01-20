@@ -4,10 +4,9 @@ public class KeyState {
 	private boolean keyPressed;
 	private boolean keyChanged;
 	private char key;
-	private int code;
 	private long initCheck=-1;
 	private long lastCheck=-1;
-	private long waitTime = 300;
+	private long waitTime = 10;
 	
 	private boolean outPressed;
 
@@ -16,7 +15,6 @@ public class KeyState {
 		keyPressed=false;
 		keyChanged=false;
 		outPressed = false;
-		code=-1;
 		timeChecker();
 		this.key=key;
 	}
@@ -32,7 +30,7 @@ public class KeyState {
 					initCheck=System.currentTimeMillis();
 					lastCheck=initCheck;
 					try {
-						Thread.sleep(waitTime+100);
+						Thread.sleep(2*waitTime);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

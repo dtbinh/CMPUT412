@@ -15,7 +15,6 @@ public class StraightLine {
 
 		Delay.msDelay(2000);
 
-		System.out.println(" " + pilot.getMovement().getDistanceTraveled());
 		Button.waitForAnyPress();
 	}
 

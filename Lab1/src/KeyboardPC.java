@@ -18,7 +18,7 @@ public class KeyboardPC extends JFrame {
 	private static KeyState downState;
 	private static KeyState leftState;
 	private static KeyState rightState;
-	private static boolean connected=true; 
+	private static boolean connected = true; 
 	
 	public KeyboardPC() {
 		
@@ -38,6 +38,8 @@ public class KeyboardPC extends JFrame {
 		leftState = new KeyState('a');
 		rightState = new KeyState('d');
 		
+		connect();
+		
 		Thread thread = new Thread() {
 			public void run() {
 				while (connected) {
@@ -56,7 +58,6 @@ public class KeyboardPC extends JFrame {
 
 	public static void main(String[] args) {
 		KeyboardPC remoteKeyboard = new KeyboardPC();
-		remoteKeyboard.connect();
 		remoteKeyboard.setVisible(true);
 		remoteKeyboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}

@@ -16,15 +16,14 @@ public class SquareTracer
             pilot.travel(length);
             pilot.rotate(90);                 
         }
-        
-        System.out.println(" " + pilot.getMovement().getDistanceTraveled());
-		Button.waitForAnyPress();
+   
+        Button.waitForAnyPress();
     }
     
     public static void main(String[] args)
     {
         SquareTracer sq = new SquareTracer();
-        sq.pilot = new DifferentialPilot(5.5f, 11.8f, Motor.A, Motor.B);
+        sq.pilot = new DifferentialPilot(5.5f, 12.65f, Motor.A, Motor.B);
         sq.drawSquare(10);
     }
 }
