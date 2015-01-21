@@ -1,6 +1,3 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
 import lejos.hardware.Button;
@@ -16,7 +13,7 @@ import lejos.utility.TextMenu;
 public class Braitenberg {
 
 	float _minThreshold = 0.1f;
-	float _maxThreshold = 0.5f;
+	float _maxThreshold = 0.7f;
 	
 	EncoderMotor _left;
 	EncoderMotor _right;
@@ -130,8 +127,8 @@ final EncoderMotor leftMotor, final EncoderMotor rightMotor)
 			if ((leftIntensity > _minThreshold || rightIntensity > _minThreshold)
 					&& (leftIntensity < _maxThreshold && rightIntensity < _maxThreshold)) {
 				
-				int leftPower = (int) (100 - 250*leftIntensity);
-				int rightPower = (int) (100 - 250*rightIntensity);
+				int leftPower = (int) (100 - 100*leftIntensity);
+				int rightPower = (int) (100 - 100*rightIntensity);
 				
 				if (leftPower < 0)
 					_left.stop();
@@ -178,8 +175,8 @@ final EncoderMotor leftMotor, final EncoderMotor rightMotor)
 			if ((leftIntensity > _minThreshold || rightIntensity > _minThreshold)
 					&& (leftIntensity < _maxThreshold && rightIntensity < _maxThreshold)) {
 				
-				int leftPower = (int) (80 - 100*leftIntensity);
-				int rightPower = (int) (80 - 100*rightIntensity);
+				int leftPower = (int) (100 - 100*leftIntensity);
+				int rightPower = (int) (100 - 100*rightIntensity);
 				
 				if (leftPower < 0)
 					_right.stop();

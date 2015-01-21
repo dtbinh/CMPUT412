@@ -9,9 +9,9 @@ import lejos.utility.Delay;
  */
 public class DeadReckoning {
 	int[][] command = {
-		      { 80, 60, 2},
-		      { 60, 60, 1},
-		      {-50, 80, 2}
+		      { 60, 70, 2},
+		      { -60, -60, 1},
+		      {-60, 0, 1}
 		    };
 	
 	EncoderMotor _left;
@@ -47,11 +47,24 @@ final EncoderMotor leftMotor, final EncoderMotor rightMotor)
 		
 		for (int i = 0; i < 3; i++) {
 			
-			_left.setPower(command[i][0]);
-			_right.setPower(command[i][1]);
+			int leftPower = command[i][0];
+			int rightPower = command[i][1];
 			
-			_left.forward();
-			_right.forward();
+			if (leftPower < 0) {
+				_left.setPower(-leftPower);
+				_left.backward();
+			} else {
+				_left.setPower(leftPower);
+				_left.forward();
+			}
+			
+			if (rightPower < 0) {
+				_right.setPower(-rightPower);
+				_right.backward();
+			} else {
+				_right.setPower(rightPower);
+				_right.forward();
+			}
 			
 			for (int delay = 0; delay < command[i][2]*100; delay++) {
 				int newLeftTachoCount = _left.getTachoCount() - leftTachoCount;
