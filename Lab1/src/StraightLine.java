@@ -11,10 +11,14 @@ public class StraightLine {
 
 	public void go() {
 		pilot.setTravelSpeed(5);
-		pilot.travel(10, true);
+		pilot.travel(40, true);
+		
+		Delay.msDelay(10000);
 
-		Delay.msDelay(2000);
-
+		
+		System.out.println("Left: " + Motor.A.getTachoCount());
+		System.out.println("Right: " + Motor.B.getTachoCount());
+		
 		Button.waitForAnyPress();
 	}
 

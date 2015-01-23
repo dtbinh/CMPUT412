@@ -9,8 +9,8 @@ public class FigureEight {
 
 	public void go() {		
 		pilot.setTravelSpeed(15);
-		pilot.steer(60, 360);
-		pilot.steer(-60, -360);
+		pilot.steer(80, 360);
+		pilot.steer(-80, -360);
 		
 		Button.waitForAnyPress();
 	}
